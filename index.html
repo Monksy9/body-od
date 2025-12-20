@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camille Dawson | Immersive Theatre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'body-red': '#dc2626',
+                        'body-pink': '#ec4899',
+                        'body-deep': '#1a0a0a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Montserrat:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #1a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('media/images/war-inside.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.55) saturate(1.2);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(26, 10, 10, 0.3) 0%,
+                rgba(26, 10, 10, 0.5) 50%,
+                rgba(26, 10, 10, 0.95) 100%
+            );
+        }
+
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 8rem);
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            line-height: 1;
+            text-transform: uppercase;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-tagline {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .thumb-strip {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 20;
+        }
+
+        .thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255,255,255,0.2);
+            opacity: 0.7;
+        }
+
+        .thumb:hover {
+            width: 160px;
+            height: 120px;
+            opacity: 1;
+            border-color: rgba(236, 72, 153, 0.8);
+            box-shadow: 0 10px 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .thumb-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .thumb-container:hover .thumb-label {
+            opacity: 1;
+        }
+
+        .thumb-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="absolute top-6 left-6 z-20 bg-white/10 backdrop-blur-md rounded-xl p-3 shadow-lg">
+            <div class="flex items-center gap-3">
+                <button id="playBtn" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-md">
+                    <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1a0a0a" stroke="none">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1a0a0a" stroke="none" class="hidden">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+                <div class="flex flex-col min-w-0">
+                    <select id="trackSelect" class="bg-transparent text-white text-sm font-medium cursor-pointer outline-none min-w-[220px]">
+                        <option value="media/music/Welcome to the Body - demo.wav">Welcome to the Body</option>
+                        <option value="media/music/Goodbye to the Body - demo.wav">Goodbye to the Body</option>
+                        <option value="media/music/Perfectly Imperfect - instrumental.wav">Perfectly Imperfect</option>
+                        <option value="media/music/Existencell - instrumental.wav">Existencell</option>
+                        <option value="media/music/Body Oddity - instrumental.wav">Body Oddity</option>
+                        <option value="media/music/Little Big Life - instrumental.wav">Little Big Life</option>
+                        <option value="media/music/Resurrection Theme - instrumental.wav">Resurrection Theme</option>
+                    </select>
+                    <div class="flex items-center gap-2">
+                        <span id="currentTime" class="text-xs text-white/60">0:00</span>
+                        <div class="w-20 h-1 bg-white/20 rounded-full overflow-hidden">
+                            <div id="progress" class="h-full bg-white/80 rounded-full w-0 transition-all"></div>
+                        </div>
+                        <span id="duration" class="text-xs text-white/60">0:00</span>
+                    </div>
+                </div>
+            </div>
+            <audio id="audioPlayer" preload="metadata"></audio>
+        </div>
+
+        <div class="absolute top-[88px] left-6 z-20 pointer-events-none">
+            <svg width="100" height="70" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 65 Q30 60, 25 45 Q22 30, 30 15" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M24 20 L30 15 L35 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <span class="absolute bottom-0 right-0 font-['Caveat'] text-white text-2xl rotate-[8deg]">listen!</span>
+        </div>
+
+        <div class="absolute top-4 left-[340px] z-20 pointer-events-none hidden md:block">
+            <div class="flex items-start gap-2">
+                <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mt-2">
+                    <path d="M55 25 Q40 20, 25 18 Q15 16, 5 20" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M10 14 L5 20 L10 26" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <div>
+                    <span class="font-['Caveat'] text-white text-xl rotate-[-2deg] block">pick a song!</span>
+                    <p class="font-['Caveat'] text-white/50 text-sm mt-1">music by Franklin Dawson<br/>& Lottie Pendlebury</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="absolute top-6 right-6 z-20 bg-white rounded-xl p-3 transition-all hover:scale-110 shadow-lg" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#insta-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                    <linearGradient id="insta-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#FCAF45"/>
+                        <stop offset="25%" style="stop-color:#E1306C"/>
+                        <stop offset="50%" style="stop-color:#C13584"/>
+                        <stop offset="75%" style="stop-color:#833AB4"/>
+                        <stop offset="100%" style="stop-color:#5B51D8"/>
+                    </linearGradient>
+                </defs>
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+        </a>
+
+        <div class="glow w-[600px] h-[600px] bg-body-pink -top-40 -left-40"></div>
+        <div class="glow w-[500px] h-[500px] bg-body-red -bottom-20 -right-20"></div>
+
+        <div class="relative z-10 h-full flex flex-col items-center justify-start text-center px-6 pt-40 md:pt-52">
+            <h1 class="hero-title text-white mb-6">
+                Body Odyssey
+            </h1>
+            <p class="text-sm text-gray-400 mb-4 tracking-widest uppercase">by Camille Dawson</p>
+            <p class="hero-tagline text-gray-300 mb-8">
+                A creative program exploring the human body through<br>
+                theatre, installations, music, workshops, and books.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 max-w-lg mb-12">
+                <span class="tag">Musical Theatre</span>
+                <span class="tag">Installation</span>
+                <span class="tag">Live Music</span>
+                <span class="tag">Workshops</span>
+            </div>
+
+            <div class="quotes-container w-full overflow-hidden h-20 md:h-24 relative mt-6 md:mt-10">
+                <div class="quotes-track absolute right-0 translate-x-full whitespace-nowrap flex items-center">
+                    <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
+                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'Wholly gripping, funny and beautifully produced'</span>
+                        <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">Reviews Hub ★★★★★</span>
+                    </div>
+                    <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
+                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'Theatre does not get much more immersive than this'</span>
+                        <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">London Theatre 1 ★★★★★</span>
+                    </div>
+                    <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
+                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'A roaring success'</span>
+                        <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">The Lancet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="thumb-strip">
+            <div class="thumb-container">
+                <img src="media/images/installation.jpg" alt="Installation" class="thumb">
+                <span class="thumb-label">Installation</span>
+            </div>
+            <div class="thumb-container">
+                <img src="media/images/good-kids-pic.jpg" alt="Body Odyssey" class="thumb">
+                <span class="thumb-label">Body Odyssey</span>
+            </div>
+            <div class="thumb-container">
+                <img src="media/images/carrot.jpg" alt="Performance" class="thumb">
+                <span class="thumb-label">Performance</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="min-h-screen bg-body-deep py-20 px-6 relative overflow-hidden">
+        <div class="glow w-[400px] h-[400px] bg-body-pink top-20 -right-40 absolute"></div>
+        <div class="glow w-[300px] h-[300px] bg-body-red bottom-40 -left-20 absolute"></div>
+
+        <div class="max-w-[90rem] mx-auto relative z-10 px-4">
+            <h2 class="font-['Caveat'] text-5xl md:text-6xl text-white text-center mb-12 rotate-[-2deg]">The Program</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[-2deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="body-odyssey">
+                    <div class="relative bg-[#f5f0e8] rounded-2xl p-3 shadow-xl">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-6 bg-pink-400/80 rounded-sm rotate-[-2deg] shadow-md"></div>
+                        <div class="aspect-[4/3] rounded-lg overflow-hidden mb-3 ring-1 ring-black/10">
+                            <img src="media/images/body-od/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-21.jpg" alt="Body Odyssey" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Caveat'] text-2xl font-bold text-gray-800 mb-1">Body Odyssey Live</h3>
+                        <p class="text-gray-600 text-xs leading-relaxed">Immersive family musical exploring anatomy through play</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[1deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="war-inside">
+                    <div class="relative bg-[#1a1a1a] rounded-2xl p-4 shadow-xl border border-white/10">
+                        <div class="absolute -top-2 -right-2 w-16 h-16">
+                            <svg viewBox="0 0 100 100" class="w-full h-full text-red-500/30"><path d="M50 5 L61 39 L97 39 L68 61 L79 95 L50 73 L21 95 L32 61 L3 39 L39 39 Z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4 ring-2 ring-red-500/30">
+                            <img src="media/images/war-inside.jpg" alt="The War Inside" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 saturate-[1.1]">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-white mb-2 tracking-wide">The War Inside</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Award-winning adult performance exploring invisible disability</p>
+                        <div class="mt-3 flex gap-2">
+                            <span class="text-[10px] bg-red-500/20 text-red-300 px-2 py-1 rounded-full">★★★★★</span>
+                            <span class="text-[10px] bg-white/10 text-gray-400 px-2 py-1 rounded-full">The Lancet</span>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[2deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="installation">
+                    <div class="relative bg-gradient-to-br from-purple-900/90 to-indigo-900/90 rounded-2xl p-4 shadow-xl border border-purple-500/20 overflow-hidden">
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4 relative">
+                            <img src="media/images/installation/installation.jpg" alt="Installation" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-white mb-2">Body Installation</h3>
+                        <p class="text-purple-200/70 text-sm leading-relaxed">Giant inflatable organs transforming spaces</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[-1deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="book-series">
+                    <div class="relative bg-[#f8f4e8] rounded-2xl p-4 shadow-xl">
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#faf8f3] flex items-center justify-center relative border-2 border-gray-200">
+                            <div class="text-center">
+                                <div class="font-['Caveat'] text-4xl text-gray-700 rotate-[-3deg]">Coming soon...</div>
+                            </div>
+                        </div>
+                        <h3 class="font-['Caveat'] text-2xl font-bold text-gray-800 mb-1">Book Series</h3>
+                        <p class="text-gray-600 text-xs leading-relaxed">Illustrated adventures inside the body</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[1deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="workshops">
+                    <div class="relative bg-gradient-to-br from-emerald-800/90 to-teal-900/90 rounded-2xl p-4 shadow-xl border border-emerald-500/20">
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4">
+                            <img src="media/images/workshops/1000144506.jpg" alt="Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-white mb-2">Workshops</h3>
+                        <p class="text-emerald-200/70 text-sm leading-relaxed">Creative wellbeing sessions for all ages</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[-2deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="body-disco">
+                    <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl p-4 shadow-xl border border-yellow-500/30 overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+                            <div class="absolute top-2 left-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                            <div class="absolute top-8 right-4 w-2 h-2 bg-pink-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                            <div class="absolute bottom-12 left-6 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                            <div class="absolute top-1/2 right-8 w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style="animation-delay: 0.6s"></div>
+                        </div>
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4">
+                            <img src="media/images/disco/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-55NO-PERMISSIONS-FOR-REFERENCE-ONLY.jpg" alt="Body Disco" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 mb-2">Body Disco</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Accessible sensory disco by Southbank Centre</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[2deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="sonic-play">
+                    <div class="relative bg-gradient-to-br from-orange-900/90 to-red-900/90 rounded-2xl p-4 shadow-xl border border-orange-500/20">
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4">
+                            <img src="media/images/sonic_play/IMG-20251202-WA0008.jpg" alt="The Sonic Play" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-white mb-2">The Sonic Play</h3>
+                        <p class="text-orange-200/70 text-sm leading-relaxed">Immersive audio experience with sculptural pods</p>
+                        <div class="mt-3">
+                            <span class="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">VAULT Festival Nominated</span>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[-1deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="tapestry">
+                    <div class="relative bg-[#f5f0e8] rounded-2xl p-3 shadow-xl">
+                        <div class="aspect-[4/3] rounded-lg overflow-hidden mb-3 ring-1 ring-black/10">
+                            <img src="media/images/tapestry/WhatsApp Image 2023-09-19 at 16.29.07 (1).jpeg" alt="Tapestry of Imperfections" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Caveat'] text-2xl font-bold text-gray-800 mb-1">Tapestry of Imperfections</h3>
+                        <p class="text-gray-600 text-xs leading-relaxed">Collaborative textile art with 200+ participants</p>
+                    </div>
+                </button>
+
+                <button class="project-card group relative text-left cursor-pointer rotate-[1deg] hover:rotate-0 transition-all duration-300 hover:scale-[1.02] hover:z-10" data-project="lectures">
+                    <div class="relative bg-gradient-to-br from-rose-900/90 to-pink-900/90 rounded-2xl p-4 shadow-xl border border-rose-500/20">
+                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4">
+                            <img src="media/images/lecture/tapestry 2.jpg" alt="Health & Empathy Lectures" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <h3 class="font-['Montserrat'] text-xl font-bold text-white mb-2">Health & Empathy Lectures</h3>
+                        <p class="text-rose-200/70 text-sm leading-relaxed">Creative training for medical students</p>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 px-6 bg-gradient-to-b from-body-deep to-[#0d0505]">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="font-['Caveat'] text-4xl md:text-5xl text-white mb-2">Create Your Own Program</h2>
+            <p class="text-gray-500 mb-8">Mix and match for your venue, festival, or community</p>
+
+            <div class="flex flex-wrap justify-center gap-3 mb-6">
+                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ffd4cc] text-[#6b3a30] hover:bg-[#e85040] hover:text-white data-[selected=true]:bg-[#e85040] data-[selected=true]:text-white" data-selected="false" data-module="theatre">Theatre</button>
+                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#e0d0ff] text-[#4a306b] hover:bg-[#8050e8] hover:text-white data-[selected=true]:bg-[#8050e8] data-[selected=true]:text-white" data-selected="false" data-module="installation">Installation</button>
+                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ffefcc] text-[#6b5a30] hover:bg-[#e8b040] hover:text-white data-[selected=true]:bg-[#e8b040] data-[selected=true]:text-white" data-selected="false" data-module="music">Music</button>
+                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ccffe0] text-[#306b4a] hover:bg-[#40c860] hover:text-white data-[selected=true]:bg-[#40c860] data-[selected=true]:text-white" data-selected="false" data-module="workshop">Workshop</button>
+                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#cce0ff] text-[#304a6b] hover:bg-[#4080e8] hover:text-white data-[selected=true]:bg-[#4080e8] data-[selected=true]:text-white" data-selected="false" data-module="book">Book</button>
+            </div>
+
+            <div id="selectedModules" class="min-h-[40px] mb-6 flex flex-wrap justify-center gap-2 items-center">
+                <span class="text-gray-600 text-sm italic">Select elements above...</span>
+            </div>
+
+            <div class="max-w-lg mx-auto mb-10">
+                <div class="relative">
+                    <textarea id="projectDescription" rows="3" class="w-full bg-[#0d0808] border border-[#3a2a2a] rounded-xl p-4 text-white text-sm placeholder-transparent focus:border-[#6a5a5a] focus:outline-none resize-none" placeholder="Tell us about your project..."></textarea>
+                    <div id="placeholderText" class="absolute top-4 left-4 pointer-events-none text-gray-600 text-sm">
+                        <span class="typing-text">I'm organising a festival and would love to discuss...</span>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-3">
+                    <button id="submitProgram" class="bg-white text-[#1a0a0a] font-medium px-6 py-2 rounded-full hover:scale-105 transition-all text-sm">Send Enquiry</button>
+                </div>
+            </div>
+
+            <p class="text-gray-500 text-sm mb-4">Or get inspired:</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
+                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
+                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Festival Weekend</h3>
+                    <p class="text-gray-500 text-xs mb-2">Installation + Workshops + Performance</p>
+                    <div class="flex gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
+                    </div>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
+                    <h3 class="font-['Caveat'] text-xl text-white mb-1">School Residency</h3>
+                    <p class="text-gray-500 text-xs mb-2">Workshops + Show + Q&A</p>
+                    <div class="flex gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
+                    </div>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
+                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Health Program</h3>
+                    <p class="text-gray-500 text-xs mb-2">Book + Workshop for chronic illness communities</p>
+                    <div class="flex gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#cce0ff]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
+                    </div>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
+                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Commission</h3>
+                    <p class="text-gray-500 text-xs mb-2">New show or installation</p>
+                    <div class="flex gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ffefcc]"></span>
+                    </div>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
+                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Gallery Exhibition</h3>
+                    <p class="text-gray-500 text-xs mb-2">Installation + Music + Opening night</p>
+                    <div class="flex gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ffefcc]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="mailto:hello@bodyodyssey.com" class="inline-block bg-white text-body-deep font-medium px-6 py-3 rounded-full hover:scale-105 transition-all">Let's Talk</a>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 bg-body-deep relative overflow-hidden">
+        <div class="glow w-[400px] h-[400px] bg-pink-500/20 top-0 right-0 absolute"></div>
+
+        <div class="max-w-5xl mx-auto relative z-10">
+            <h2 class="font-['Caveat'] text-5xl md:text-6xl text-white text-center mb-16 rotate-[1deg]">Artist Story</h2>
+
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <div class="space-y-6">
+                    <p class="text-gray-300 leading-relaxed">
+                        Body Odyssey began from a personal need to understand and speak about my own chronic illnesses, which I had kept private for many years due to internalised shame, stigma and a lack of open cultural conversation around invisible conditions. Early audio projects helped me explore my story safely and made me realise how many people felt the same. That recognition became the foundation for a wider creative exploration of how we talk about the body.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        The project grew naturally from there. With The War Inside and Body Odyssey Live, both ACE funded, we saw how strongly audiences connected to the work. People wrote to us with their own experiences, often saying it was the first time they felt seen, and some travelled long distances to attend. Opportunities began opening in unexpected places: GP practices offered filming spaces, charities approached us to collaborate, and schools, universities and health organisations invited us to share the work. It became clear that these subjects were universal, underrepresented and deeply needed.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Body Odyssey is now a multi-strand project spanning books, performance, workshops and partnerships with charities and neurodivergent-led organisations. The vision is to continue building on this momentum, expanding collaborations across arts, science and learning spaces, and growing the project into a nationwide conversation. Our aim is to reach a wide range of communities and create imaginative, accessible tools that help people explore their bodies and health experiences with confidence, curiosity and care.
+                    </p>
+                    <p class="text-gray-400 italic mt-8">Camille Dawson, 2025</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-xl">
+                        <img src="media/images/cam_artist_pic.jpg" alt="Camille Dawson performing" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-500 text-sm text-center">Camille Dawson</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="projectModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" id="modalOverlay"></div>
+        <div class="absolute inset-4 md:inset-12 lg:inset-20 xl:inset-28 bg-body-deep rounded-3xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh]">
+            <button id="closeModal" class="absolute top-4 right-4 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center z-10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <div id="modalContent" class="flex-1 overflow-y-auto p-8 md:p-12"></div>
+        </div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to('.hero-bg', {
+            scale: 1.1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        gsap.from('.hero-title', {
+            y: 60,
+            opacity: 0,
+            duration: 1.2,
+            ease: "power3.out"
+        });
+
+        gsap.from('.hero-tagline', {
+            y: 40,
+            opacity: 0,
+            duration: 1,
+            delay: 0.4,
+            ease: "power2.out"
+        });
+
+        gsap.from('.tag', {
+            y: 20,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            delay: 0.8,
+            ease: "power2.out"
+        });
+
+        gsap.from('.thumb', {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            delay: 1,
+            ease: "back.out(1.7)"
+        });
+
+        document.querySelectorAll('.glow').forEach((glow, i) => {
+            gsap.to(glow, {
+                x: i % 2 === 0 ? 30 : -30,
+                y: 20,
+                duration: 4 + i,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true
+            });
+        });
+
+        const quotesTrack = document.querySelector('.quotes-track');
+        const quoteItems = document.querySelectorAll('.quote-item');
+        const totalWidth = quoteItems.length * window.innerWidth;
+
+        gsap.to('.quotes-track', {
+            x: () => -(totalWidth + window.innerWidth),
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: () => `+=${totalWidth * 0.4}`,
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+    </script>
+
+    <script>
+        const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const trackSelect = document.getElementById('trackSelect');
+        const progress = document.getElementById('progress');
+        const currentTime = document.getElementById('currentTime');
+        const duration = document.getElementById('duration');
+
+        audio.src = trackSelect.value;
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        });
+
+        trackSelect.addEventListener('change', () => {
+            audio.src = trackSelect.value;
+            audio.play();
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = `${percent}%`;
+            currentTime.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            duration.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('ended', () => {
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+            progress.style.width = '0%';
+        });
+
+        const moduleChips = document.querySelectorAll('.module-chip');
+        const selectedModulesContainer = document.getElementById('selectedModules');
+        const selectedModules = new Set();
+
+        moduleChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const module = chip.dataset.module;
+                const isSelected = chip.dataset.selected === 'true';
+
+                if (isSelected) {
+                    chip.dataset.selected = 'false';
+                    selectedModules.delete(module);
+                } else {
+                    chip.dataset.selected = 'true';
+                    selectedModules.add(module);
+                }
+
+                updateSelectedDisplay();
+            });
+        });
+
+        function updateSelectedDisplay() {
+            if (selectedModules.size === 0) {
+                selectedModulesContainer.innerHTML = '<span class="text-gray-600 text-sm italic">Select elements above...</span>';
+            } else {
+                const colors = {
+                    theatre: 'bg-[#e85040]',
+                    installation: 'bg-[#8050e8]',
+                    music: 'bg-[#e8b040]',
+                    workshop: 'bg-[#40c860]',
+                    book: 'bg-[#4080e8]'
+                };
+                const items = Array.from(selectedModules).map(m => {
+                    return `<span class="${colors[m]} text-white px-3 py-1 rounded-full text-sm">${m.charAt(0).toUpperCase() + m.slice(1)}</span>`;
+                }).join('<span class="text-gray-600 mx-1">+</span>');
+                selectedModulesContainer.innerHTML = items;
+            }
+        }
+
+
+        const projectData = {
+            'body-odyssey': {
+                title: 'Body Odyssey – Immersive Musical for Families',
+                images: [
+                    'media/images/body-od/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-21.jpg',
+                    'media/images/body-od/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-26.jpg',
+                    'media/images/body-od/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-52 (1).jpg',
+                    'media/images/body-od/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-57.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">An interactive family show that invites children to step inside a playful, anatomy-inspired world. Using music, storytelling and participation, the performance guides audiences through the workings of the body in a way that is imaginative, accessible and scientifically grounded.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Adaptable for different venues and formats, the show has been developed with live audiences through <strong class="text-white">sell-out events at the Southbank Centre</strong>.</p>
+                <p class="text-gray-300 leading-relaxed">The performance creates a space where children aged 5-12 can explore their bodies with wonder, asking questions and discovering answers through song, movement and play.</p>`
+            },
+            'war-inside': {
+                title: 'The War Inside – Immersive Multimedia Performance for Adults',
+                images: [
+                    'media/images/war-inside/Photo©EllieKurttz_The War Inside_PRO_044.jpg',
+                    'media/images/war-inside/Photo©EllieKurttz_The War Inside_PRO_088.jpg',
+                    'media/images/war-inside/Photo©EllieKurttz_The War Inside_PRO_096.jpg',
+                    'media/images/war-inside/Copy of Photo©EllieKurttz_The War Inside_PRO_120.jpg',
+                    'media/images/war-inside/Copy of Photo©EllieKurttz_The War Inside_PRO_069.jpg',
+                    'media/images/war-inside/Copy of Photo©EllieKurttz_The War Inside_PRO_041.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">A critically acclaimed performance set inside a surreal, internal landscape. Drawing on lived experience of chronic illness, the piece weaves movement, film, sound and installation to explore invisible disability and the emotional worlds surrounding it.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Presented at the Albany Theatre and supported by <strong class="text-white">Arts Council England</strong>, The War Inside was praised for its originality, humour and emotional depth.</p>
+                <p class="text-gray-300 leading-relaxed">The show has received <strong class="text-white">5-star reviews</strong> and was praised by <strong class="text-white">The Lancet</strong> for its powerful exploration of hidden illness.</p>`
+            },
+            'installation': {
+                title: 'Body Installation – Inflatable Touring Anatomy Sculpture',
+                images: [
+                    'media/images/installation/installation.jpg',
+                    'media/images/installation/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-70.jpg',
+                    'media/images/installation/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-71.jpg',
+                    'media/images/installation/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-72.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">A series of large-scale inflatable organs — including a heart, liver and neuron — created with artist <strong class="text-white">Cristina Ottonello</strong>.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Lightweight, visually striking and easy to rig, these installations can tour independently or alongside performance work, transforming spaces into vivid internal landscapes that spark curiosity and conversation.</p>
+                <p class="text-gray-300 leading-relaxed">The installations create immersive environments that invite audiences to step inside the human body and experience anatomy in a new way.</p>`
+            },
+            'book-series': {
+                title: 'Body Odyssey – The Book Series',
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">Body Odyssey is an illustrated children's book series that turns the inner world of the body into a space of imagination and emotional discovery.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Each title uses story to help young readers understand how we think, feel and grow, offering gentle ways to explore their bodies and inner worlds.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Developed with children and community partners through creative workshops, the series draws from the artist Camille's long-standing practice at the intersection of storytelling, health and empathy.</p>
+                <p class="text-gray-300 leading-relaxed">The first books explore themes such as <strong class="text-white">resilience, difference and family wellbeing</strong>, forming the early foundation of a wider Body Odyssey universe.</p>`
+            },
+            'workshops': {
+                title: 'Body as a Landscape – Creative Wellbeing Workshops',
+                images: [
+                    'media/images/workshops/1000144506.jpg',
+                    'media/images/workshops/1000144504.jpg',
+                    'media/images/workshops/1000144505.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">Workshops inviting children and adults to explore the body as a place of imagination, emotion and storytelling.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Through drawing, movement, mapping and simple creative tasks, participants reflect on how their inner worlds connect with their physical ones.</p>
+                <p class="text-gray-300 leading-relaxed">These sessions offer a gentle entry point into <strong class="text-white">wellbeing, expression and embodied understanding</strong>.</p>`
+            },
+            'body-disco': {
+                title: 'Body Disco – Accessible Sensory Disco',
+                images: [
+                    'media/images/disco/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-55NO-PERMISSIONS-FOR-REFERENCE-ONLY.jpg',
+                    'media/images/disco/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-57 (1).jpg',
+                    'media/images/disco/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-20.jpg',
+                    'media/images/disco/Saturday Sessions with Body Odyssey 03-05--25 - Credit- Pete Woodhead-65.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">A relaxed, sensory-friendly disco set within the immersive body environment.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Remixing music from the original Body Odyssey score, the Body Disco blends movement, play and simple anatomy-themed activities in an atmosphere designed for children with varied access needs.</p>
+                <p class="text-gray-300 leading-relaxed"><strong class="text-white">Commissioned by the Southbank Centre</strong>, it offers a soft, welcoming way for young people to explore the body through sound and play.</p>`
+            },
+            'sonic-play': {
+                title: 'The Sonic Play – Immersive Audio Experience',
+                images: [
+                    'media/images/sonic_play/IMG-20251202-WA0008.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">A 30-minute sound-led journey that places audiences inside an intimate, internal world.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Using headphones and sculptural listening pods, the piece creates a deeply immersive sensory experience that expands the themes of The War Inside.</p>
+                <p class="text-gray-300 leading-relaxed">It premiered to <strong class="text-white">sold-out performances</strong> and was <strong class="text-white">nominated for a VAULT Festival Award</strong>.</p>`
+            },
+            'tapestry': {
+                title: 'The Tapestry of Imperfections – Community Workshop & Installation',
+                images: [
+                    'media/images/tapestry/WhatsApp Image 2023-09-19 at 16.29.07 (1).jpeg',
+                    'media/images/tapestry/WhatsApp Image 2023-09-19 at 15.22.33.jpeg',
+                    'media/images/tapestry/IMG_20230919_134313_resized_20230919_053738173.jpg',
+                    'media/images/tapestry/IMG_20230919_134421_resized_20230919_053742746.jpg',
+                    'media/images/tapestry/76dd01c3-6153-482e-85a9-1a88ea9da9fa.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">A collaborative artwork created with more than <strong class="text-white">200 participants</strong>, exploring ideas of "imperfection," repair and lived experience.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Through open, gentle textile-based workshops, contributors are invited to stitch personal stories into a growing multi-metre tapestry.</p>
+                <p class="text-gray-300 leading-relaxed">The piece now tours as an evolving installation that continues to gather new voices.</p>`
+            },
+            'lectures': {
+                title: 'Arts, Empathy and Health Lectures – Creative Training for Emerging Professionals',
+                images: [
+                    'media/images/lecture/tapestry 2.jpg',
+                    'media/images/lecture/tapestry 3.jpg',
+                    'media/images/lecture/tapestry 4.jpg'
+                ],
+                content: `<p class="text-gray-300 text-lg leading-relaxed mb-6">Born directly from The War Inside, this pilot lecture series explored the intersection of arts, empathy and health with trainee doctors at the <strong class="text-white">University of Leicester</strong> and drama students on applied arts modules.</p>
+                <p class="text-gray-300 leading-relaxed mb-6">Using performance tools, storytelling and lived experience, the sessions offered a new way for future clinicians and practitioners to understand chronic illness, invisible disability and patient experience.</p>
+                <p class="text-gray-300 leading-relaxed">The response was overwhelmingly positive, demonstrating the power of creative methods in medical and educational settings.</p>`
+            }
+        };
+
+        const modal = document.getElementById('projectModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModal = document.getElementById('closeModal');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        let tapestryGalleryIndex = 0;
+        let tapestryGalleryInterval = null;
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const project = card.dataset.project;
+                const data = projectData[project];
+                if (data) {
+                    let galleryHTML = '';
+                    if (data.images && data.images.length > 0) {
+                        galleryHTML = `
+                            <div class="relative">
+                                <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-black/50 relative">
+                                    <img id="galleryImage" src="${data.images[0]}" alt="Gallery" class="w-full h-full object-cover transition-opacity duration-500">
+                                    <button id="galleryPrev" class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-all backdrop-blur-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                                    </button>
+                                    <button id="galleryNext" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-all backdrop-blur-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                                    </button>
+                                </div>
+                                <div id="galleryDots" class="flex justify-center gap-2 mt-3">
+                                    ${data.images.map((_, i) => `<button class="gallery-dot w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-white w-5' : 'bg-white/30'}" data-index="${i}"></button>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    const hasGallery = data.images && data.images.length > 0;
+                    modalContent.innerHTML = hasGallery ? `
+                        <h2 class="font-['Montserrat'] text-2xl md:text-3xl font-bold text-white mb-6">${data.title}</h2>
+                        <div class="grid md:grid-cols-2 gap-8 items-start">
+                            <div class="md:sticky md:top-0">${galleryHTML}</div>
+                            <div>${data.content}</div>
+                        </div>
+                    ` : `
+                        <h2 class="font-['Montserrat'] text-3xl md:text-4xl font-bold text-white mb-8">${data.title}</h2>
+                        ${data.content}
+                    `;
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+
+                    if (data.images && data.images.length > 0) {
+                        tapestryGalleryIndex = 0;
+                        const images = data.images;
+                        const galleryImg = document.getElementById('galleryImage');
+                        const dots = document.querySelectorAll('.gallery-dot');
+
+                        function updateGallery(index) {
+                            tapestryGalleryIndex = index;
+                            if (tapestryGalleryIndex < 0) tapestryGalleryIndex = images.length - 1;
+                            if (tapestryGalleryIndex >= images.length) tapestryGalleryIndex = 0;
+                            galleryImg.style.opacity = '0';
+                            setTimeout(() => {
+                                galleryImg.src = images[tapestryGalleryIndex];
+                                galleryImg.style.opacity = '1';
+                            }, 250);
+                            dots.forEach((dot, i) => {
+                                dot.classList.toggle('bg-white', i === tapestryGalleryIndex);
+                                dot.classList.toggle('w-6', i === tapestryGalleryIndex);
+                                dot.classList.toggle('bg-white/30', i !== tapestryGalleryIndex);
+                                dot.classList.toggle('w-2', i !== tapestryGalleryIndex);
+                            });
+                        }
+
+                        document.getElementById('galleryPrev').addEventListener('click', () => {
+                            updateGallery(tapestryGalleryIndex - 1);
+                            resetAutoRotate();
+                        });
+                        document.getElementById('galleryNext').addEventListener('click', () => {
+                            updateGallery(tapestryGalleryIndex + 1);
+                            resetAutoRotate();
+                        });
+                        dots.forEach(dot => {
+                            dot.addEventListener('click', () => {
+                                updateGallery(parseInt(dot.dataset.index));
+                                resetAutoRotate();
+                            });
+                        });
+
+                        function resetAutoRotate() {
+                            if (tapestryGalleryInterval) clearInterval(tapestryGalleryInterval);
+                            tapestryGalleryInterval = setInterval(() => updateGallery(tapestryGalleryIndex + 1), 2500);
+                        }
+                        resetAutoRotate();
+                    }
+                }
+            });
+        });
+
+        function closeProjectModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+            if (tapestryGalleryInterval) {
+                clearInterval(tapestryGalleryInterval);
+                tapestryGalleryInterval = null;
+            }
+        }
+
+        closeModal.addEventListener('click', closeProjectModal);
+        modalOverlay.addEventListener('click', closeProjectModal);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeProjectModal();
+            }
+        });
+
+        const projectTextarea = document.getElementById('projectDescription');
+        const placeholderText = document.getElementById('placeholderText');
+        const typingText = placeholderText.querySelector('.typing-text');
+        const fullText = "I am organising a children's hospital program about UC and would love to explore a collaboration...";
+        let charIndex = 0;
+        let typingInterval;
+
+        function typeText() {
+            if (charIndex < fullText.length) {
+                typingText.textContent = fullText.substring(0, charIndex + 1);
+                charIndex++;
+            } else {
+                clearInterval(typingInterval);
+                setTimeout(() => {
+                    charIndex = 0;
+                    typingText.textContent = '';
+                    typingInterval = setInterval(typeText, 50);
+                }, 3000);
+            }
+        }
+
+        typingText.textContent = '';
+        typingInterval = setInterval(typeText, 50);
+
+        projectTextarea.addEventListener('focus', () => {
+            placeholderText.style.opacity = '0';
+            clearInterval(typingInterval);
+        });
+
+        projectTextarea.addEventListener('blur', () => {
+            if (projectTextarea.value === '') {
+                placeholderText.style.opacity = '1';
+                charIndex = 0;
+                typingText.textContent = '';
+                typingInterval = setInterval(typeText, 50);
+            }
+        });
+
+        projectTextarea.addEventListener('input', () => {
+            if (projectTextarea.value !== '') {
+                placeholderText.style.opacity = '0';
+                clearInterval(typingInterval);
+            }
+        });
+
+        document.getElementById('submitProgram').addEventListener('click', () => {
+            const selected = Array.from(selectedModules).map(m => m.charAt(0).toUpperCase() + m.slice(1)).join(', ');
+            const description = projectTextarea.value;
+            const subject = encodeURIComponent('Body Odyssey Program Enquiry');
+            const body = encodeURIComponent(`Selected components: ${selected || 'None selected'}\n\nMessage:\n${description || 'No message provided'}`);
+            window.location.href = `mailto:hello@bodyodyssey.com?subject=${subject}&body=${body}`;
+        });
+    </script>
+</body>
+</html>
