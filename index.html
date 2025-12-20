@@ -23,6 +23,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Montserrat:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Grotesk:wght@400;500;700&display=swap');
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -172,7 +176,7 @@
                     </svg>
                 </button>
                 <div class="flex flex-col min-w-0">
-                    <select id="trackSelect" class="bg-transparent text-white text-sm font-medium cursor-pointer outline-none min-w-[220px]">
+                    <select id="trackSelect" class="bg-transparent text-white text-base font-medium cursor-pointer outline-none min-w-[280px]">
                         <option value="media/music/Welcome to the Body - demo.wav">Welcome to the Body</option>
                         <option value="media/music/Goodbye to the Body - demo.wav">Goodbye to the Body</option>
                         <option value="media/music/Perfectly Imperfect - instrumental.wav">Perfectly Imperfect</option>
@@ -181,9 +185,9 @@
                         <option value="media/music/Little Big Life - instrumental.wav">Little Big Life</option>
                         <option value="media/music/Resurrection Theme - instrumental.wav">Resurrection Theme</option>
                     </select>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 mt-1">
                         <span id="currentTime" class="text-xs text-white/60">0:00</span>
-                        <div class="w-20 h-1 bg-white/20 rounded-full overflow-hidden">
+                        <div class="w-40 h-1.5 bg-white/20 rounded-full overflow-hidden">
                             <div id="progress" class="h-full bg-white/80 rounded-full w-0 transition-all"></div>
                         </div>
                         <span id="duration" class="text-xs text-white/60">0:00</span>
@@ -214,7 +218,7 @@
             </div>
         </div>
 
-        <a href="#" class="absolute top-6 right-6 z-20 bg-white rounded-xl p-3 transition-all hover:scale-110 shadow-lg" aria-label="Instagram">
+        <a href="#" class="absolute top-6 right-6 z-20 bg-white/20 backdrop-blur-sm rounded-xl p-3 transition-all hover:scale-110 hover:bg-white/40" aria-label="Instagram">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#insta-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <defs>
                     <linearGradient id="insta-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -250,18 +254,18 @@
                 <span class="tag">Workshops</span>
             </div>
 
-            <div class="quotes-container w-full overflow-hidden h-20 md:h-24 relative mt-6 md:mt-10">
+            <div class="quotes-container w-full overflow-hidden h-24 md:h-28 relative mt-6 md:mt-10">
                 <div class="quotes-track absolute right-0 translate-x-full whitespace-nowrap flex items-center">
                     <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
-                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'Wholly gripping, funny and beautifully produced'</span>
+                        <span class="quote-text font-['Playfair_Display'] text-2xl md:text-3xl lg:text-4xl text-white/90 italic text-center">'Wholly gripping, funny and beautifully produced'</span>
                         <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">Reviews Hub ★★★★★</span>
                     </div>
                     <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
-                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'Theatre does not get much more immersive than this'</span>
+                        <span class="quote-text font-['Playfair_Display'] text-2xl md:text-3xl lg:text-4xl text-white/90 italic text-center">'Theatre does not get much more immersive than this'</span>
                         <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">London Theatre 1 ★★★★★</span>
                     </div>
                     <div class="quote-item flex flex-col items-center justify-center min-w-[100vw] px-8">
-                        <span class="quote-text font-['Playfair_Display'] text-xl md:text-2xl lg:text-3xl text-white/80 italic text-center">'A roaring success'</span>
+                        <span class="quote-text font-['Playfair_Display'] text-2xl md:text-3xl lg:text-4xl text-white/90 italic text-center">'A roaring success'</span>
                         <span class="quote-source text-xs md:text-sm text-white/50 mt-2 tracking-widest uppercase">The Lancet</span>
                     </div>
                 </div>
