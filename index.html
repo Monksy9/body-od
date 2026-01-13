@@ -10,6 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -435,79 +436,92 @@
             <h2 class="font-['Caveat'] text-4xl md:text-5xl text-white mb-2">Create Your Own Program</h2>
             <p class="text-gray-500 mb-8">Mix and match for your venue, festival, or community</p>
 
-            <div class="flex flex-wrap justify-center gap-3 mb-6">
-                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ffd4cc] text-[#6b3a30] hover:bg-[#e85040] hover:text-white data-[selected=true]:bg-[#e85040] data-[selected=true]:text-white" data-selected="false" data-module="theatre">Theatre</button>
-                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#e0d0ff] text-[#4a306b] hover:bg-[#8050e8] hover:text-white data-[selected=true]:bg-[#8050e8] data-[selected=true]:text-white" data-selected="false" data-module="installation">Installation</button>
-                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ffefcc] text-[#6b5a30] hover:bg-[#e8b040] hover:text-white data-[selected=true]:bg-[#e8b040] data-[selected=true]:text-white" data-selected="false" data-module="music">Music</button>
-                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#ccffe0] text-[#306b4a] hover:bg-[#40c860] hover:text-white data-[selected=true]:bg-[#40c860] data-[selected=true]:text-white" data-selected="false" data-module="workshop">Workshop</button>
-                <button class="module-chip px-4 py-2 rounded-full text-sm font-medium transition-all bg-[#cce0ff] text-[#304a6b] hover:bg-[#4080e8] hover:text-white data-[selected=true]:bg-[#4080e8] data-[selected=true]:text-white" data-selected="false" data-module="book">Book</button>
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button class="module-chip group flex flex-col items-center gap-1 transition-all" data-selected="false" data-module="theatre">
+                    <span class="w-14 h-14 rounded-full bg-[#c45c4a]/20 flex items-center justify-center transition-all group-hover:bg-[#c45c4a] group-active:bg-[#c45c4a] group-hover:scale-110 group-active:scale-110">
+                        <i class="ph-duotone ph-microphone-stage text-2xl text-[#c45c4a] group-hover:text-white group-active:text-white transition-colors"></i>
+                    </span>
+                    <span class="text-xs text-gray-400 group-hover:text-white group-active:text-white transition-colors">Theatre</span>
+                </button>
+                <button class="module-chip group flex flex-col items-center gap-1 transition-all" data-selected="false" data-module="installation">
+                    <span class="w-14 h-14 rounded-full bg-[#8b6b9c]/20 flex items-center justify-center transition-all group-hover:bg-[#8b6b9c] group-active:bg-[#8b6b9c] group-hover:scale-110 group-active:scale-110">
+                        <i class="ph-duotone ph-shapes text-2xl text-[#8b6b9c] group-hover:text-white group-active:text-white transition-colors"></i>
+                    </span>
+                    <span class="text-xs text-gray-400 group-hover:text-white group-active:text-white transition-colors">Installation</span>
+                </button>
+                <button class="module-chip group flex flex-col items-center gap-1 transition-all" data-selected="false" data-module="music">
+                    <span class="w-14 h-14 rounded-full bg-[#c9a227]/20 flex items-center justify-center transition-all group-hover:bg-[#c9a227] group-active:bg-[#c9a227] group-hover:scale-110 group-active:scale-110">
+                        <i class="ph-duotone ph-vinyl-record text-2xl text-[#c9a227] group-hover:text-white group-active:text-white transition-colors"></i>
+                    </span>
+                    <span class="text-xs text-gray-400 group-hover:text-white group-active:text-white transition-colors">Music</span>
+                </button>
+                <button class="module-chip group flex flex-col items-center gap-1 transition-all" data-selected="false" data-module="workshop">
+                    <span class="w-14 h-14 rounded-full bg-[#6b8e6b]/20 flex items-center justify-center transition-all group-hover:bg-[#6b8e6b] group-active:bg-[#6b8e6b] group-hover:scale-110 group-active:scale-110">
+                        <i class="ph-duotone ph-hand-heart text-2xl text-[#6b8e6b] group-hover:text-white group-active:text-white transition-colors"></i>
+                    </span>
+                    <span class="text-xs text-gray-400 group-hover:text-white group-active:text-white transition-colors">Workshop</span>
+                </button>
+                <button class="module-chip group flex flex-col items-center gap-1 transition-all" data-selected="false" data-module="book">
+                    <span class="w-14 h-14 rounded-full bg-[#5c7a99]/20 flex items-center justify-center transition-all group-hover:bg-[#5c7a99] group-active:bg-[#5c7a99] group-hover:scale-110 group-active:scale-110">
+                        <i class="ph-duotone ph-book-open-text text-2xl text-[#5c7a99] group-hover:text-white group-active:text-white transition-colors"></i>
+                    </span>
+                    <span class="text-xs text-gray-400 group-hover:text-white group-active:text-white transition-colors">Book</span>
+                </button>
             </div>
 
             <div id="selectedModules" class="min-h-[40px] mb-6 flex flex-wrap justify-center gap-2 items-center">
                 <span class="text-gray-600 text-sm italic">Select elements above...</span>
             </div>
 
-            <div class="max-w-lg mx-auto mb-10">
+            <form id="programForm" class="max-w-lg mx-auto mb-10">
                 <div class="relative">
-                    <textarea id="projectDescription" rows="3" class="w-full bg-[#0d0808] border border-[#3a2a2a] rounded-xl p-4 text-white text-sm placeholder-transparent focus:border-[#6a5a5a] focus:outline-none resize-none" placeholder="Tell us about your project..."></textarea>
-                    <div id="placeholderText" class="absolute top-4 left-4 pointer-events-none text-gray-600 text-sm">
-                        <span class="typing-text">I'm organising a festival and would love to discuss...</span>
-                    </div>
+                    <textarea name="message" id="projectDescription" rows="3" class="w-full bg-[#0d0808] border border-[#3a2a2a] rounded-xl p-4 text-white text-sm focus:border-[#6a5a5a] focus:outline-none resize-none placeholder-gray-600" placeholder="I'm organising a festival and would love to discuss..."></textarea>
                 </div>
                 <div class="flex justify-end mt-3">
-                    <button id="submitProgram" class="bg-white text-[#1a0a0a] font-medium px-6 py-2 rounded-full hover:scale-105 transition-all text-sm">Send Enquiry</button>
+                    <button type="submit" id="submitBtn" class="bg-white text-[#1a0a0a] font-medium px-6 py-2 rounded-full hover:scale-105 transition-all text-sm">Send Enquiry</button>
+                </div>
+                <div id="formSuccess" class="hidden mt-4 text-center text-green-400 text-sm">Thanks! Your message has been sent.</div>
+                <div id="formError" class="hidden mt-4 text-center text-red-400 text-sm">Something went wrong. Please try again.</div>
+            </form>
+
+            <p class="text-gray-500 text-xs mb-5">some ideas...</p>
+
+            <div class="max-w-lg mx-auto mb-8 space-y-2">
+                <div class="flex items-center gap-3 py-2 px-3">
+                    <span class="font-['Caveat'] text-xl text-white/90 flex-shrink-0">Festival Weekend</span>
+                    <span class="flex-grow border-b border-dotted border-gray-700"></span>
+                    <span class="inline-flex gap-2 items-center">
+                        <i class="ph-duotone ph-shapes text-base text-[#8b6b9c]"></i>
+                        <i class="ph-duotone ph-hand-heart text-base text-[#6b8e6b]"></i>
+                        <i class="ph-duotone ph-microphone-stage text-base text-[#c45c4a]"></i>
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 py-2 px-3">
+                    <span class="font-['Caveat'] text-xl text-white/90 flex-shrink-0">School Residency</span>
+                    <span class="flex-grow border-b border-dotted border-gray-700"></span>
+                    <span class="inline-flex gap-2 items-center">
+                        <i class="ph-duotone ph-book-open-text text-base text-[#5c7a99]"></i>
+                        <i class="ph-duotone ph-hand-heart text-base text-[#6b8e6b]"></i>
+                        <i class="ph-duotone ph-microphone-stage text-base text-[#c45c4a]"></i>
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 py-2 px-3">
+                    <span class="font-['Caveat'] text-xl text-white/90 flex-shrink-0">Health Program</span>
+                    <span class="flex-grow border-b border-dotted border-gray-700"></span>
+                    <span class="inline-flex gap-2 items-center">
+                        <i class="ph-duotone ph-book-open-text text-base text-[#5c7a99]"></i>
+                        <i class="ph-duotone ph-hand-heart text-base text-[#6b8e6b]"></i>
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 py-2 px-3">
+                    <span class="font-['Caveat'] text-xl text-white/90 flex-shrink-0">Gallery Exhibition</span>
+                    <span class="flex-grow border-b border-dotted border-gray-700"></span>
+                    <span class="inline-flex gap-2 items-center">
+                        <i class="ph-duotone ph-shapes text-base text-[#8b6b9c]"></i>
+                        <i class="ph-duotone ph-vinyl-record text-base text-[#c9a227]"></i>
+                    </span>
                 </div>
             </div>
-
-            <p class="text-gray-500 text-sm mb-4">Or get inspired:</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-10">
-                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
-                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Festival Weekend</h3>
-                    <p class="text-gray-500 text-xs mb-2">Installation + Workshops + Performance</p>
-                    <div class="flex gap-1">
-                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
-                    <h3 class="font-['Caveat'] text-xl text-white mb-1">School Residency</h3>
-                    <p class="text-gray-500 text-xs mb-2">Workshops + Show + Q&A</p>
-                    <div class="flex gap-1">
-                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
-                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Health Program</h3>
-                    <p class="text-gray-500 text-xs mb-2">Book + Workshop for chronic illness communities</p>
-                    <div class="flex gap-1">
-                        <span class="w-3 h-3 rounded-full bg-[#cce0ff]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ccffe0]"></span>
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
-                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Commission</h3>
-                    <p class="text-gray-500 text-xs mb-2">New show or installation</p>
-                    <div class="flex gap-1">
-                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ffefcc]"></span>
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-xl p-4 text-left border border-white/10 hover:border-white/30 transition-all">
-                    <h3 class="font-['Caveat'] text-xl text-white mb-1">Gallery Exhibition</h3>
-                    <p class="text-gray-500 text-xs mb-2">Installation + Music + Opening night</p>
-                    <div class="flex gap-1">
-                        <span class="w-3 h-3 rounded-full bg-[#e0d0ff]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ffefcc]"></span>
-                        <span class="w-3 h-3 rounded-full bg-[#ffd4cc]"></span>
-                    </div>
-                </div>
-            </div>
-
-            <a href="mailto:camillenaomidawson@gmail.com" class="inline-block bg-white text-body-deep font-medium px-6 py-3 rounded-full hover:scale-105 transition-all">Let's Talk</a>
         </div>
     </section>
 
@@ -690,17 +704,36 @@
         const selectedModulesContainer = document.getElementById('selectedModules');
         const selectedModules = new Set();
 
+        const moduleColors = {
+            theatre: 'bg-[#c45c4a]',
+            installation: 'bg-[#8b6b9c]',
+            music: 'bg-[#c9a227]',
+            workshop: 'bg-[#6b8e6b]',
+            book: 'bg-[#5c7a99]'
+        };
+
         moduleChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 const module = chip.dataset.module;
                 const isSelected = chip.dataset.selected === 'true';
+                const iconContainer = chip.querySelector('span');
+                const icon = chip.querySelector('i');
+                const label = chip.querySelectorAll('span')[1];
 
                 if (isSelected) {
                     chip.dataset.selected = 'false';
                     selectedModules.delete(module);
+                    iconContainer.classList.remove('scale-110', moduleColors[module]);
+                    icon.classList.remove('text-white');
+                    label.classList.remove('text-white');
+                    label.classList.add('text-gray-400');
                 } else {
                     chip.dataset.selected = 'true';
                     selectedModules.add(module);
+                    iconContainer.classList.add('scale-110', moduleColors[module]);
+                    icon.classList.add('text-white');
+                    label.classList.add('text-white');
+                    label.classList.remove('text-gray-400');
                 }
 
                 updateSelectedDisplay();
@@ -724,7 +757,6 @@
                 selectedModulesContainer.innerHTML = items;
             }
         }
-
 
         const projectData = {
             'body-odyssey': {
@@ -949,56 +981,57 @@
         });
 
         const projectTextarea = document.getElementById('projectDescription');
-        const placeholderText = document.getElementById('placeholderText');
-        const typingText = placeholderText.querySelector('.typing-text');
-        const fullText = "I am organising a children's hospital program about UC and would love to explore a collaboration...";
-        let charIndex = 0;
-        let typingInterval;
 
-        function typeText() {
-            if (charIndex < fullText.length) {
-                typingText.textContent = fullText.substring(0, charIndex + 1);
-                charIndex++;
-            } else {
-                clearInterval(typingInterval);
-                setTimeout(() => {
-                    charIndex = 0;
-                    typingText.textContent = '';
-                    typingInterval = setInterval(typeText, 50);
-                }, 3000);
-            }
-        }
+        document.getElementById('programForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        typingText.textContent = '';
-        typingInterval = setInterval(typeText, 50);
+            const submitBtn = document.getElementById('submitBtn');
+            const formSuccess = document.getElementById('formSuccess');
+            const formError = document.getElementById('formError');
 
-        projectTextarea.addEventListener('focus', () => {
-            placeholderText.style.opacity = '0';
-            clearInterval(typingInterval);
-        });
-
-        projectTextarea.addEventListener('blur', () => {
-            if (projectTextarea.value === '') {
-                placeholderText.style.opacity = '1';
-                charIndex = 0;
-                typingText.textContent = '';
-                typingInterval = setInterval(typeText, 50);
-            }
-        });
-
-        projectTextarea.addEventListener('input', () => {
-            if (projectTextarea.value !== '') {
-                placeholderText.style.opacity = '0';
-                clearInterval(typingInterval);
-            }
-        });
-
-        document.getElementById('submitProgram').addEventListener('click', () => {
             const selected = Array.from(selectedModules).map(m => m.charAt(0).toUpperCase() + m.slice(1)).join(', ');
-            const description = projectTextarea.value;
-            const subject = encodeURIComponent('Body Odyssey Program Enquiry');
-            const body = encodeURIComponent(`Selected components: ${selected || 'None selected'}\n\nMessage:\n${description || 'No message provided'}`);
-            window.location.href = `mailto:camillenaomidawson@gmail.com?subject=${subject}&body=${body}`;
+            const message = projectTextarea.value;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            formSuccess.classList.add('hidden');
+            formError.classList.add('hidden');
+
+            try {
+                const response = await fetch('https://formsubmit.co/ajax/camillenaomidawson@gmail.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: 'Body Odyssey Program Enquiry',
+                        selected_modules: selected || 'None selected',
+                        message: message || 'No message provided'
+                    })
+                });
+
+                if (response.ok) {
+                    formSuccess.classList.remove('hidden');
+                    projectTextarea.value = '';
+                    selectedModules.clear();
+                    moduleChips.forEach(chip => {
+                        chip.dataset.selected = 'false';
+                        const iconContainer = chip.querySelector('span');
+                        const icon = chip.querySelector('i');
+                        const label = chip.querySelectorAll('span')[1];
+                        iconContainer.classList.remove('scale-110', moduleColors[chip.dataset.module]);
+                        icon.classList.remove('text-white');
+                        label.classList.remove('text-white');
+                        label.classList.add('text-gray-400');
+                    });
+                    updateSelectedDisplay();
+                } else {
+                    formError.classList.remove('hidden');
+                }
+            } catch (err) {
+                formError.classList.remove('hidden');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Enquiry';
         });
     </script>
 </body>
